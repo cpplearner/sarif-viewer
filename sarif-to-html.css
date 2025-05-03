@@ -1,0 +1,121 @@
+.sarif-run,
+.sarif-run-result,
+.sarif-context-snippet {
+    border: 1px solid;
+    margin: 5px;
+    padding: 5px;
+}
+
+.sarif-snippet-region {
+    background: lightyellow;
+}
+
+.sarif-tool-component,
+.sarif-message-category,
+.sarif-message-level,
+.sarif-context-snippet {
+    display: inline-block;
+}
+
+.sarif-message {
+    display: contents;
+}
+
+.sarif-message>summary {
+    display: inline;
+}
+
+.sarif-location>summary {
+    display: block;
+}
+
+.sarif-run-result, .sarif-related-location {
+    display: grid;
+    grid: auto-flow / auto 1fr;
+}
+
+.sarif-message-primary {
+    grid-area: 1 / 2;
+}
+
+.sarif-message-secondary {
+    display: contents;
+}
+
+.sarif-message-secondary>summary {
+    grid-area: 1 / 1;
+    padding: 0 2px 0 0;
+}
+
+.sarif-message-secondary>summary::marker {
+    content: '[+]';
+    font-family: monospace;
+}
+
+.sarif-message-secondary:open>summary::marker {
+    content: '[-]';
+}
+
+/* Workaround Edge bug:
+ * the grid-area rule for .sarif-message-secondary>div does not work on Edge.
+ */
+.sarif-message-secondary::before {
+    content: '';
+    grid-area: 2 / 1;
+}
+
+.sarif-message-secondary>div {
+    grid-area: 2 / 2;
+}
+
+.sarif-related-location:not(:has(.sarif-message-secondary))::before {
+    content: '\2022';
+    padding: 0 7px;
+}
+
+.sarif-source-location {
+    font-size: small;
+    font-weight: bold;
+}
+
+.sarif-message-level {
+    font-weight: bold;
+}
+
+.sarif-level-error .sarif-message-level {
+    color: red;
+}
+
+.sarif-level-warning .sarif-message-level {
+    color: orange;
+}
+
+.sarif-level-note .sarif-message-level {
+    color: darkcyan;
+}
+
+.sarif-message-category {
+    color: grey;
+    padding: 0 10px 0 0;
+}
+
+.sarif-message-rule-id {
+    font-size: small;
+}
+
+.sarif-relationships {
+    display: none;
+}
+
+.sarif-location-inclusion>.sarif-physical-location,
+.sarif-location-inclusion>.sarif-physical-location>.sarif-source-location {
+    display: inline;
+}
+
+.sarif-location-inclusion .sarif-context-snippet {
+    display: none;
+}
+
+.sarif-message-text {
+    font-family: monospace;
+}
