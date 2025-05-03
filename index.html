@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<title>SARIF Viewer</title><link rel="stylesheet" href="./sarif-to-html.css">
+<input type="file" id="file-input"><div id="output"></div>
+<script type="module">
+    import {sarif_to_html} from "./sarif-to-html.js";
+
+    document.getElementById('file-input').addEventListener('change', async (e) => {
+        const input = await e.target.files[0].text();
+        const result = sarif_to_html(JSON.parse(input));
+        document.getElementById('output').replaceChildren(result);
+    });
+</script>
