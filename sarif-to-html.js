@@ -220,6 +220,10 @@ class SARIFToHTMLConverter {
             message_category_info.append(rule_id_info);
         }
 
+        const related_locations = run_result.relatedLocations ?? [];
+
+        this.context.related_locations_map = new Map(related_locations.map(x => [x.id, x]));
+
         const message_info = create('details', {className: 'sarif-message', open: true});
         const message_text_info = init(create('summary'), [this.render_message(run_result.message)]);
         const location_info = this.map(run_result.locations, this.render_location);
@@ -227,10 +231,6 @@ class SARIFToHTMLConverter {
         init(primary_info, [message_category_info, message_info]);
 
         init(elem, [primary_info]);
-
-        const related_locations = run_result.relatedLocations ?? [];
-
-        this.context.related_locations_map = new Map(related_locations.map(x => [x.id, x]));
 
         const stack = [{child_loc: undefined, elem, nesting_level: 0}];
         for (const related_location of related_locations) {
