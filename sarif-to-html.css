@@ -119,3 +119,7 @@
 .sarif-message-text {
     font-family: monospace;
 }
+
+.sarif-message-text:has(.sarif-message-text-cooked)>.sarif-message-text-raw {
+    display: none;
+}

@@ -32,10 +32,10 @@ class SARIFToHTMLConverter {
     render_artifact_location(artifact_location) {
         const elem = create('span', {className: 'sarif-artifact-location'});
 
-        const uri = artifact_location.uri;
-        const final_uri = this.hooks?.hook_filename?.(uri) ?? uri;
+        const original_uri = artifact_location.uri;
+        const uri = this.hooks?.hook_filename?.(original_uri) ?? original_uri;
 
-        return init(elem, [final_uri]);
+        return init(elem, [uri]);
     }
 
     render_location(loc) {
@@ -67,19 +67,49 @@ class SARIFToHTMLConverter {
     }
 
     render_message(message) {
-        const original_text = message.text;
+        const elem = create('span', {className: 'sarif-message-text'});
 
-        const text = original_text.replaceAll(/\{\{|\}\}|\{(\d+)\}/g, (m, p1) => {
-            if (p1) {
-                return message.arguments[p1];
-            } else {
-                return m[0];
+        const re = /\{\{|\}\}|\{(\d+)\}|([{}])/g;
+        const has_error = (text) => {
+            for (const part of text.matchAll(re)) {
+                const placeholder_index = part[1];
+                const bad_brace = part[2];
+                if (placeholder_index && message.arguments?.[placeholder_index] == null) {
+                    return true;
+                } else if (bad_brace) {
+                    return true;
+                }
             }
-        });
 
-        const final_text = this.hooks?.hook_message_text?.(text) ?? text;
+            return false;
+        };
 
-        return init(create('span', {className: 'sarif-message-text'}), [final_text]);
+        const original_raw_text = message.text;
+        const raw_text = this.hooks?.hook_message_text?.(original_raw_text) ?? original_raw_text;
+        const raw_text_elem = init(create('span', {className: 'sarif-message-text-raw'}), [raw_text]);
+        init(elem, [raw_text_elem]);
+
+        const has_braces = /[{}]/.test(original_raw_text);
+
+        if (has_braces) {
+            elem.classList.add('sarif-message-text-has-braces');
+        }
+
+        if (has_braces && !has_error(original_raw_text)) {
+            const original_cooked_text = original_raw_text.replaceAll(re, (match, placeholder_index) => {
+                if (placeholder_index) {
+                    return message.arguments?.[placeholder_index];
+                } else {
+                    return match[0];
+                }
+            });
+
+            const cooked_text = this.hooks?.hook_message_text?.(original_cooked_text) ?? original_cooked_text;
+            const cooked_text_elem = init(create('span', {className: 'sarif-message-text-cooked'}), [cooked_text]);
+            elem.append(cooked_text_elem);
+        }
+
+        return elem;
     }
 
     render_physical_location(loc) {
